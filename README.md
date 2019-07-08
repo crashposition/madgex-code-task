@@ -22,6 +22,17 @@ To stop the environment run:
 
 ```docker-compose down```
 
+## Development
+
+### Client: VueJS
+
+To work on client code ```cd client``` to enter the client directory. Run ```npm run serve``` to init the dev server. To export a build run ```npm run build```. This will overwrite the contents of the ```/server/public``` directory.
+
+### Server: NodeJS
+
+To work on server code ```cd server``` to enter the server directory. Run ```npm run dev``` to init the dev server. 
+
+
 ---
 
 ## About
