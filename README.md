@@ -14,6 +14,10 @@ To start the environment run:
 
 ```docker-compose up -d```
 
+To view, open your browser at:
+
+```http://localhost:3000/```
+
 To stop the environment run:
 
 ```docker-compose down```
