@@ -1,24 +1,41 @@
 'use strict';
 
 const Hapi = require('@hapi/hapi');
+const Path = require('path');
+const Inert = require('@hapi/inert');
 
 const init = async () => {
 
     const server = Hapi.server({
         port: 3000,
-        host: 'localhost'
+        host: '0.0.0.0',
     });
 
+    await server.register(Inert);
+
+    // Serve static content on root route
     server.route({
         method: 'GET',
-        path:'/',
-        handler: (request, h) => {
-
-            return 'Hello World!';
+        path: '/{param*}',
+        handler: {
+            directory: {
+                path: 'public'
+            }
         }
     });
 
+    // Serve 404 for anythin not found
+    server.route({
+        method: '*',
+        path: '/{any*}',
+        handler: (request, h) => {
+
+            return '404 Error! Page Not Found!';
+        }
+    });    
+
     await server.start();
+    server.log(['init'], 'Server running on %s', server.info.uri);
     console.log('Server running on %s', server.info.uri);
 };
 
