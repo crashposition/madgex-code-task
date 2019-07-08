@@ -4,6 +4,8 @@
   "description": "API Server for Products",
   "main": "server.js",
   "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon --watch src src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
@@ -11,5 +13,8 @@
   "dependencies": {
     "@hapi/hapi": "^18.3.1",
     "@hapi/inert": "^5.2.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.19.1"
   }
 }

@@ -24,7 +24,7 @@ const init = async () => {
         }
     });
 
-    // Serve 404 for anythin not found
+    // Serve 404 for anything not found
     server.route({
         method: '*',
         path: '/{any*}',
