@@ -4,6 +4,7 @@ set -e
 set -u
 echo "init-db begins"
 
+# IMPORT RAW DATA
 CREATE_RAW_TABLE_SQL=$(cat <<EOF
     CREATE TABLE raw (
         product_name    VARCHAR(200)    NOT NULL,
@@ -12,6 +13,17 @@ CREATE_RAW_TABLE_SQL=$(cat <<EOF
 EOF
 )
 
+IMPORT_RAW_DATA_SQL=$(cat <<EOF
+    COPY raw FROM '/docker-entrypoint-initdb.d/products.csv' CSV HEADER;
+EOF
+)
+
+DROP_RAW_TABLE_SQL=$(cat <<EOF
+    DROP TABLE raw;
+EOF
+)
+
+# FINAL SCHEMA
 CREATE_PRODUCTS_TABLE_SQL=$(cat <<EOF
     CREATE TABLE products (
         product_name    VARCHAR(200)    NOT NULL,
@@ -27,19 +39,27 @@ CREATE_ADVERTISERS_TABLE_SQL=$(cat <<EOF
 EOF
 )
 
-DROP_RAW_TABLE_SQL=$(cat <<EOF
-    DROP TABLE raw;
-EOF
-)
 
-# Create Postgres Tables
+
+# Import raw data
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
 $CREATE_RAW_TABLE_SQL
-$CREATE_PRODUCTS_TABLE_SQL
-$CREATE_ADVERTISERS_TABLE_SQL
-$DROP_RAW_TABLE_SQL
+$IMPORT_RAW_DATA_SQL
 commit;
 EOSQL
+
+# Create final Tables
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+$CREATE_PRODUCTS_TABLE_SQL
+$CREATE_ADVERTISERS_TABLE_SQL
+commit;
+EOSQL
+
+# Clean up
+#psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+#$DROP_RAW_TABLE_SQL
+#commit;
+#EOSQL
 
 
 echo "init-db complete"
