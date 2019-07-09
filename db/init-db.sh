@@ -14,7 +14,7 @@ EOF
 )
 
 IMPORT_RAW_DATA_SQL=$(cat <<EOF
-    COPY raw FROM '/docker-entrypoint-initdb.d/products.csv' CSV HEADER;
+    COPY raw FROM '/docker-entrypoint-initdb.d/products_clean.csv' CSV HEADER;
 EOF
 )
 
@@ -39,6 +39,9 @@ CREATE_ADVERTISERS_TABLE_SQL=$(cat <<EOF
 EOF
 )
 
+# Clean up raw data
+# Remove comments and empty lines. Replace double commas with single.
+cat /docker-entrypoint-initdb.d/products.csv | grep -v "^#" | sed '/^ *$/d' | sed 's/,\{2,\}/,/g' > /docker-entrypoint-initdb.d/products_clean.csv
 
 
 # Import raw data
@@ -48,14 +51,16 @@ $IMPORT_RAW_DATA_SQL
 commit;
 EOSQL
 
-# Create final Tables
+# Create final tables
 psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
 $CREATE_PRODUCTS_TABLE_SQL
 $CREATE_ADVERTISERS_TABLE_SQL
 commit;
 EOSQL
 
-# Clean up
+# TODO: Populate final tables from raw table
+
+# Clean up raw table
 #psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
 #$DROP_RAW_TABLE_SQL
 #commit;

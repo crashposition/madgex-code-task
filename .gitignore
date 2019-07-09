@@ -1,6 +1,10 @@
+# Raw Data
+products.csv
+products_clean.csv
+
+# Node and file system
 .DS_Store
 node_modules
-products.csv
 
 # local env files
 .env
