@@ -4,17 +4,21 @@
 
 ### System Requirements
 
-To run this application locally you will need:
+You will need:
 
 - [Docker for Desktop](https://www.docker.com/products/docker-desktop).
 
-### Commands
+### Setup
+
+The ```products.csv``` file is not included in the repo as it's quite large. Copy the file into the ```db``` directory.
+
+### Run
 
 To start the environment run:
 
 ```docker-compose up -d```
 
-To view, open your browser at:
+Then open your browser to:
 
 ```http://localhost:3000/```
 
