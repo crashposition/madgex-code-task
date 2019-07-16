@@ -1,6 +1,7 @@
 "use strict";
 
 const Boom = require("@hapi/boom");
+//const hapiPgPromise = require("hapi-pg-promise");
 
 module.exports.register = async server => {
   // Serve static content on root route
@@ -23,12 +24,27 @@ module.exports.register = async server => {
     }
   });
 
-  // Serve products API
+  // Serve products API: e.g. GET /products?limit=20&offset=20
   server.route({
     method: "GET",
     path: "/products/{any*}",
-    handler: (request, h) => {
-      return "Products";
+    handler: async (request, h) => {
+      const table = "raw";
+      const limit = request.query.limit || 10;
+      const offset = request.query.offset || 0;
+      if (limit > 100) {limit = 100}
+
+      try {
+        const products = await request.db.any(
+          `SELECT * FROM ${table} LIMIT ${limit} OFFSET ${offset};`,
+          [true]
+        );
+        // console.log("DATA:", products);
+        return products;
+      } catch (error) {
+        // console.log("ERROR:", error);
+        throw Boom.internal("Failed SQL Query");
+      }
     }
   });
 
