@@ -1,8 +1,9 @@
 "use strict";
 
-module.exports.register = async server => {
+const Boom = require("@hapi/boom");
 
-    // Serve static content on root route
+module.exports.register = async server => {
+  // Serve static content on root route
   server.route({
     method: "GET",
     path: "/{param*}",
@@ -13,32 +14,30 @@ module.exports.register = async server => {
     }
   });
 
-  // Serve 404 for anything not found
+  // Serve a 404 for anything not found
   server.route({
     method: "*",
     path: "/{any*}",
     handler: (request, h) => {
-      return "404 Error! Page Not Found!";
+      throw Boom.notFound("missing page");
     }
   });
 
-  /*
-    // Serve products
-    server.route({
-      method: "GET",
-      path: "/products/{any*}",
-      handler: (request, h) => {
-        return "Products";
-      }
-    });
-  
-    // Serve advertisers
-    server.route({
-      method: "GET",
-      path: "/advertisers/{any*}",
-      handler: (request, h) => {
-        return "Advertisers";
-      }
-    });
-  */
+  // Serve products API
+  server.route({
+    method: "GET",
+    path: "/products/{any*}",
+    handler: (request, h) => {
+      return "Products";
+    }
+  });
+
+  // Serve advertisers API
+  server.route({
+    method: "GET",
+    path: "/advertisers/{any*}",
+    handler: (request, h) => {
+      return "Advertisers";
+    }
+  });
 };
