@@ -32,6 +32,8 @@ module.exports.register = async server => {
       const table = "raw";
       const limit = request.query.limit || 10;
       const offset = request.query.offset || 0;
+
+      // throttle results
       if (limit > 100) {limit = 100}
 
       try {

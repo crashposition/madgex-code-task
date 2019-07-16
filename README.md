@@ -10,32 +10,47 @@ You will need:
 
 ### Setup
 
-The ```products.csv``` file is not included in the repo as it's quite large. Copy the file into the ```db``` directory.
+1. The ```products.csv``` file is not included in the repo as it's quite large. Copy the file into the ```db``` directory.
+
+2. Copy or rename the file ```server/.env.example``` as ```server/.env```. This contains environment variables for the app server.
 
 ### Run
 
-To start the environment run:
+To start the full environment run:
 
 ```docker-compose up -d```
 
-Then open your browser to:
+To view the web client open your browser to:
 
 http://localhost:3000/
 
-To stop the environment run:
+To view the products API open your browser to:
+
+http://localhost:3000/products?limit=20&offset=0
+
+To stop the environment hit ```Ctrl C``` then run:
 
 ```docker-compose down```
 
 ## Development
 
-### Client: VueJS
+### Database: Postgres
 
-To work on client code ```cd client``` to enter the client directory. Run ```npm run serve``` to init the dev server. To export a build run ```npm run build```. This will overwrite the contents of the ```/server/public``` directory.
+To start the database for development run:
+
+```docker-compose -f docker-compose.dev.yml up```
+
+To stop the database hit ```Ctrl C``` then run:
+
+```docker-compose down```
 
 ### Server: NodeJS
 
 To work on server code ```cd server``` to enter the server directory. Run ```npm run dev``` to init the dev server. 
 
+### Client: VueJS
+
+To work on client code ```cd client``` to enter the client directory. Run ```npm run serve``` to init the dev server. To export a build run ```npm run build```. This will overwrite the contents of the ```/server/public``` directory.
 
 ---
 
