@@ -20,7 +20,7 @@ To start the environment run:
 
 Then open your browser to:
 
-```http://localhost:3000/```
+http://localhost:3000/
 
 To stop the environment run:
 

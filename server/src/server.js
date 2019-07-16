@@ -1,48 +1,28 @@
-'use strict';
+"use strict";
 
-const Hapi = require('@hapi/hapi');
-const Path = require('path');
-const Inert = require('@hapi/inert');
+require("dotenv").config();
+const app = require("./app");
+
+const port = parseInt(process.env.APP_SERVER_PORT) || 80;
+const host = process.env.APP_SERVER_HOST || "localhost";
+const config = { port, host };
 
 const init = async () => {
+  try {
+    // create the server
+    const server = await app.createServer(config);
 
-    const server = Hapi.server({
-        port: 3000,
-        host: '0.0.0.0',
-    });
-
-    await server.register(Inert);
-
-    // Serve static content on root route
-    server.route({
-        method: 'GET',
-        path: '/{param*}',
-        handler: {
-            directory: {
-                path: 'public'
-            }
-        }
-    });
-
-    // Serve 404 for anything not found
-    server.route({
-        method: '*',
-        path: '/{any*}',
-        handler: (request, h) => {
-
-            return '404 Error! Page Not Found!';
-        }
-    });    
-
+    // start the server
     await server.start();
-    server.log(['init'], 'Server running on %s', server.info.uri);
-    console.log('Server running on %s', server.info.uri);
-};
 
-process.on('unhandledRejection', (err) => {
-
-    console.log(err);
+    // log server running
+    server.log(["init"], "Server running on %s", server.info.uri);
+    console.log("Server running on %s", server.info.uri);
+  } catch (err) {
+    // log server error
+    console.log(`Error while starting server: ${err.message}`);
     process.exit(1);
-});
+  }
+};
 
 init();
