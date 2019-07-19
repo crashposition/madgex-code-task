@@ -11,7 +11,7 @@ services:
       PORT: 3000
     ports:
       - "3000:3000"
-    command: npm run start --prefix ./server
+    command: sh -c './wait-for postgres:5432 -t 240 -- npm run start --prefix ./server'
     volumes:
       - .:/app/
       - /app/node_modules
@@ -31,20 +31,6 @@ services:
     - ./db:/docker-entrypoint-initdb.d
     networks:
       - postgres
-
-  pgadmin:
-    container_name: pgadmin
-    image: dpage/pgadmin4
-    depends_on:
-      - postgres
-    environment:
-      PGADMIN_DEFAULT_EMAIL: pgadmin4@pgadmin.org
-      PGADMIN_DEFAULT_PASSWORD: admin
-    ports:
-      - "5050:80"
-    networks:
-      - postgres
-    restart: unless-stopped
 
 networks:
   postgres:

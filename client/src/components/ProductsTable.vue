@@ -1,7 +1,7 @@
 <template>
   <div>
-    <button type="button" :disabled="!hasPrevious">Previous</button>
-    <button type="button" :disabled="!hasNext">Next</button>
+    <button type="button" @click="getPrevious" :disabled="!hasPrevious">Previous</button>
+    <button type="button" @click="getNext" :disabled="!hasNext">Next</button>
     <table>
       <thead>
         <tr>
@@ -20,7 +20,9 @@
 <script>
 export default {
   name: "datatable",
-  data: () => ({}),
+  data: () => ({
+    isBusy: false
+  }),
   computed: {
     productTitles() {
       return this.$store.getters.productTitles;
@@ -34,6 +36,23 @@ export default {
     hasPrevious() {
       return this.$store.getters.hasPrevious;
     }
+  },
+  methods: {
+    getNext() {
+      this.$store.dispatch("GET_PRODUCTS_NEXT_PAGE");
+    },
+    getPrevious() {
+      this.$store.dispatch("GET_PRODUCTS_PREVIOUS_PAGE");
+    }
+  },
+  async mounted() {
+    this.isBusy = true;
+    try {
+      await this.$store.dispatch("GET_PRODUCTS_DATA");
+    } catch (ex) {
+      this.error = "Failed to load data";
+    }
+    this.isBusy = false;
   }
 };
 </script>
