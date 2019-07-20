@@ -1,52 +1,62 @@
 import Vue from "vue";
 import Vuex from "vuex";
-import axios from 'axios';
+import axios from "axios";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
-    productTitles: ["Product", "Advertiser", "SKU"],
-    productData: [
-      ["Product name 1", "Advertiser name 1", "SKU 1"],
-      ["Product name 2", "Advertiser name 2", "SKU 2"],
-      ["Product name 3", "Advertiser name 3", "SKU 3"],
-      ["Product name 1", "Advertiser name 1", "SKU 1"],
-      ["Product name 2", "Advertiser name 2", "SKU 2"],
-      ["Product name 3", "Advertiser name 3", "SKU 3"]
-    ],
-    totalRecords: 3,
-    currentRecord: 0,
-    recordsPerPage: 3
+    tableName: "",
+    tableData: []
   },
   getters: {
-    productTitles: state => state.productTitles,
-    productData: state => state.productData,
-    hasNext: state => {
-      return state.currentRecord < state.totalRecords;
+    tableData: state => state.tableData,
+    tableTitles: state => {
+      switch (state.tableName) {
+        case "products":
+          return ["Product ID", "Product Name"];
+        case "advertisers":
+          return ["Advertiser ID", "Advertiser Name"];
+        case "product_skus":
+          return ["Product SKU", "Product ID", "Advertiser ID"];
+        default:
+          return [];
+      }
     },
-    hasPrevious: state => {
-      return state.currentRecord > 0;
+    tableIDs: state => {
+      switch (state.tableName) {
+        case "products":
+          return ["product_id", "product_name"];
+        case "advertisers":
+          return ["advertiser_id", "advertiser_name"];
+        case "product_skus":
+          return ["product_sku", "product_id", "advertiser_id"];
+        default:
+          return [];
+      }
     }
   },
   mutations: {
-    SET_PROJECTS(state) {
-      console.log(state);
+    SET_TABLE_NAME(state, payload) {
+      state.tableName = payload;
+    },
+    SET_TABLE_DATA(state, payload) {
+      state.tableData = payload;
     }
   },
   actions: {
-    async GET_PRODUCTS_DATA(context) {
-      console.log("loading init data");
-      var result = await axios.get("/products?limit=20&offset=20");
-      context.commit("SET_PROJECTS", result.data);
-    },
-    GET_PRODUCTS_NEXT_PAGE: (context, payload) => {
-      // load data
-      context.commit("UPDATE_PRODUCTS_DATA", payload);
-    },
-    GET_PRODUCTS_PREVIOUS_PAGE: (context, payload) => {
-      // load data
-      context.commit("UPDATE_PRODUCTS_DATA", payload);
+    async GET_DATA(context, payload) {
+      var tableName = payload.table;
+      var limit = payload.limit;
+      var offset = payload.offset;
+      console.log(
+        `loading data:  http://localhost:3000/${tableName}?limit=${limit}&offset=${offset}`
+      );
+      var result = await axios.get(
+        `http://localhost:3000/${tableName}?limit=${limit}&offset=${offset}`
+      );
+      context.commit("SET_TABLE_NAME", tableName);
+      context.commit("SET_TABLE_DATA", result.data);
     }
   }
 });

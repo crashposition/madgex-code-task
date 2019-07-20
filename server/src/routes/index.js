@@ -79,7 +79,7 @@ module.exports.register = async server => {
   // Serve skus API e.g. GET /skus?limit=20&offset=20
   server.route({
     method: "GET",
-    path: "/skus/{any*}",
+    path: "/product_skus/{any*}",
     handler: async (request, h) => {
       const table = "product_skus";
       const limit = request.query.limit || 10;

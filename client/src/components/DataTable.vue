@@ -1,16 +1,16 @@
 <template>
   <div>
-    <button type="button" @click="getPrevious" :disabled="!hasPrevious">Previous</button>
-    <button type="button" @click="getNext" :disabled="!hasNext">Next</button>
+    <button type="button" @click="getPreviousPage" :disabled="!hasPrevious">Previous</button>
+    <button type="button" @click="getNextPage" :disabled="!hasNext">Next</button>
     <table>
       <thead>
         <tr>
-          <th v-for="(title, titleIndex) in productTitles" :key="titleIndex">{{ title }}</th>
+          <th v-for="(title, titleIndex) in tableTitles" :key="titleIndex">{{ title }}</th>
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(row, dataIndex) in productData" :key="dataIndex">
-          <td v-for="(rowData, rowIndex) in productTitles" :key="rowIndex">{{ row[rowIndex] }}</td>
+        <tr v-for="(row, dataIndex) in tableData" :key="dataIndex">
+          <td v-for="(rowData, rowIndex) in tableIDs" :key="rowIndex">{{ row[rowData] }}</td>
         </tr>
       </tbody>
     </table>
@@ -20,39 +20,55 @@
 <script>
 export default {
   name: "datatable",
+  props: {
+    src: String
+  },
   data: () => ({
-    isBusy: false
+    isBusy: Boolean,
+    limit: 10,
+    offset: 0
   }),
   computed: {
-    productTitles() {
-      return this.$store.getters.productTitles;
+    tableTitles() {
+      return this.$store.getters.tableTitles;
     },
-    productData() {
-      return this.$store.getters.productData;
+    tableIDs() {
+      return this.$store.getters.tableIDs;
+    },
+    tableData() {
+      return this.$store.getters.tableData;
     },
     hasNext() {
-      return this.$store.getters.hasNext;
+      return true;
     },
     hasPrevious() {
-      return this.$store.getters.hasPrevious;
+      return this.offset > 0;
     }
   },
   methods: {
-    getNext() {
-      this.$store.dispatch("GET_PRODUCTS_NEXT_PAGE");
+    getNextPage() {
+      this.getData(this.limit, this.offset + this.limit);
     },
-    getPrevious() {
-      this.$store.dispatch("GET_PRODUCTS_PREVIOUS_PAGE");
+    getPreviousPage() {
+      this.getData(this.limit, this.offset - this.limit);
+    },
+    async getData(limit, offset) {
+      this.limit = limit;
+      this.offset = offset;
+
+      this.isBusy = true;
+      var payload = { table: this.src, limit, offset };
+      try {
+        await this.$store.dispatch("GET_DATA", payload);
+      } catch (ex) {
+        this.error = "Failed to load data";
+      }
+      this.isBusy = false;
     }
   },
-  async mounted() {
-    this.isBusy = true;
-    try {
-      await this.$store.dispatch("GET_PRODUCTS_DATA");
-    } catch (ex) {
-      this.error = "Failed to load data";
-    }
-    this.isBusy = false;
+  mounted() {
+    // get initial batch of data
+    this.getData(10, 0);
   }
 };
 </script>
