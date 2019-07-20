@@ -3,7 +3,12 @@
 require("dotenv").config();
 const port = parseInt(process.env.APP_SERVER_PORT) || 80;
 const host = process.env.APP_SERVER_HOST || "localhost";
-const config = { port, host, routes: { cors: true } };
+const config = { port, host };
+
+// Add CORS support in dev
+if (process.env.NODE_ENV == "development"){
+  config.routes = { cors: true }
+}
 
 const app = require("./app");
 
