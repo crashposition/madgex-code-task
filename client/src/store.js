@@ -18,7 +18,7 @@ export default new Vuex.Store({
         case "advertisers":
           return ["Advertiser ID", "Advertiser Name"];
         case "product_skus":
-          return ["Product SKU", "Product ID", "Advertiser ID"];
+          return ["Product SKU", "Product Name", "Advertiser Name"];
         default:
           return [];
       }
@@ -30,7 +30,7 @@ export default new Vuex.Store({
         case "advertisers":
           return ["advertiser_id", "advertiser_name"];
         case "product_skus":
-          return ["product_sku", "product_id", "advertiser_id"];
+          return ["product_sku", "product_name", "advertiser_name"];
         default:
           return [];
       }
@@ -50,10 +50,10 @@ export default new Vuex.Store({
       var limit = payload.limit;
       var offset = payload.offset;
       console.log(
-        `loading data:  http://localhost:3000/${tableName}?limit=${limit}&offset=${offset}`
+        `loading data:  http://localhost:3000/api/${tableName}?limit=${limit}&offset=${offset}`
       );
       var result = await axios.get(
-        `http://localhost:3000/${tableName}?limit=${limit}&offset=${offset}`
+        `http://localhost:3000/api/${tableName}?limit=${limit}&offset=${offset}`
       );
       context.commit("SET_TABLE_NAME", tableName);
       context.commit("SET_TABLE_DATA", result.data);

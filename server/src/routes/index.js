@@ -27,7 +27,7 @@ module.exports.register = async server => {
   // Serve products API: e.g. GET /products?limit=20&offset=20
   server.route({
     method: "GET",
-    path: "/products/{any*}",
+    path: "/api/products/{any*}",
     handler: async (request, h) => {
       const table = "products";
       const limit = request.query.limit || 10;
@@ -53,7 +53,7 @@ module.exports.register = async server => {
   // Serve advertisers API e.g. GET /advertisers?limit=20&offset=20
   server.route({
     method: "GET",
-    path: "/advertisers/{any*}",
+    path: "/api/advertisers/{any*}",
     handler: async (request, h) => {
       const table = "advertisers";
       const limit = request.query.limit || 10;
@@ -76,10 +76,10 @@ module.exports.register = async server => {
     }
   });
 
-  // Serve skus API e.g. GET /skus?limit=20&offset=20
+  // Serve skus API e.g. GET /product_skus?limit=20&offset=20
   server.route({
     method: "GET",
-    path: "/product_skus/{any*}",
+    path: "/api/product_skus/{any*}",
     handler: async (request, h) => {
       const table = "product_skus";
       const limit = request.query.limit || 10;
@@ -90,7 +90,7 @@ module.exports.register = async server => {
 
       try {
         const products = await request.db.any(
-          `SELECT * FROM ${table} LIMIT ${limit} OFFSET ${offset};`,
+`SELECT product_sku, product_name, advertiser_name FROM ( SELECT * FROM product_skus INNER JOIN products ON product_skus.product_id = products.product_id INNER JOIN  advertisers ON product_skus.advertiser_id = advertisers.advertiser_id ) e1 LIMIT ${limit} OFFSET ${offset} ;`,
           [true]
         );
         // console.log("DATA:", products);
