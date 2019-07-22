@@ -10,23 +10,29 @@ You will need:
 
 ### Setup
 
-1. The ```products.csv``` file is not included in the repo as it's quite large. Copy the file into the ```db``` directory.
+1. The ```products.csv``` file is not included in the repo as it's quite large. Copy this file into the ```db``` directory.
 
 2. Copy or rename the file ```server/.env.example``` as ```server/.env```. This contains environment variables for the app server.
 
-### Run
+### Start
 
 To start the full environment run:
 
 ```docker-compose up -d```
 
-To view the web client open your browser to:
+Please wait. Progress information can be found in your console. 
 
-http://localhost:3000/
+1. The database will be initialised from the products.csv file. This can take a while. 
+
+2. The API and web server will wait for the database to be available before launching.
+
+When available, you can view the web client from your browser at: http://localhost:3000/
 
 To view the products API open your browser to:
 
 http://localhost:3000/products?limit=20&offset=0
+
+### Stop
 
 To stop the environment hit ```Ctrl C``` then run:
 
@@ -62,5 +68,27 @@ To export a build run ```npm run build```. This will overwrite the contents of t
 
 - [PostgreSQL](https://www.postgresql.org/) database.
 - [NodeJS](https://nodejs.org/en/) server. The version is specified in the file ```.nvmrc```.
-- Application Server built on NodeJS the [hapi](https://hapijs.com/) framework.
+- Application Server built on NodeJS with the [hapi](https://hapijs.com/) framework.
 - Front end built with [VueJS](https://vuejs.org/).
+
+---
+
+## Data Import
+
+The import script can be found in ```/db/init-db.sh``` 
+
+The broad steps are:
+
+1. We clean the data. There are a few null fields in the ```products.csv``` file. We clean this file by removing comments and empty lines and replacing any double commas with single to remove the nulls. We then export a new ```products_clean.csv``` file.
+
+2. The script imports the ```products_clean.csv``` file into a temporary ```raw``` table. This table is used to build out the other tables.
+
+### Insert Efficiency
+
+Q. We'd like you to describe an efficient approach to inserting the file. How would this approach scale?
+
+A. The Postgres COPY command is the fastest way I know to import CSV data. This copes very well, even at scale. Other factors that improve efficiency are that we import all the data in a single transaction. We also don't have any expensive indexes or constraints on the raw table.
+
+### Personal Analysis
+
+I think the import step is quite efficient but the post import table generation steps are brute force and could be improved. 
