@@ -25,7 +25,7 @@ export default {
   },
   data: () => ({
     isBusy: Boolean,
-    limit: 10,
+    limit: 15,
     offset: 0
   }),
   computed: {
@@ -39,7 +39,7 @@ export default {
       return this.$store.getters.tableData;
     },
     hasNext() {
-      return true;
+      return this.tableData.length == this.limit;
     },
     hasPrevious() {
       return this.offset > 0;
@@ -68,7 +68,7 @@ export default {
   },
   mounted() {
     // get initial batch of data
-    this.getData(10, 0);
+    this.getData(this.limit, 0);
   }
 };
 </script>
